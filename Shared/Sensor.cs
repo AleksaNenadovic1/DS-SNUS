@@ -1,6 +1,9 @@
-﻿using Shared.Enums;
-namespace Shared.Models;
+﻿namespace Shared.Models;
 
+using Shared.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
+
+[Table("sensors")]
 public class Sensor
 {
     public int Id { get; set; }
@@ -25,4 +28,5 @@ public class Sensor
 
     public ICollection<Measurement> Measurements { get; set; }
         = new List<Measurement>();
+
 }

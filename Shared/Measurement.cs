@@ -1,7 +1,9 @@
-﻿using Shared.Enums;
+﻿namespace Shared.Models;
 
-namespace Shared.Models;
+using Shared.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
+[Table("measurements")]
 public class Measurement
 {
     public long Id { get; set; }
@@ -19,4 +21,5 @@ public class Measurement
     public SensorQuality Quality { get; set; }
 
     public bool IsConsensus { get; set; }
+
 }

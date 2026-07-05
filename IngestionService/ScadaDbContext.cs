@@ -6,9 +6,7 @@ namespace IngestionService.Data;
 public class ScadaDbContext : DbContext
 {
     public ScadaDbContext(DbContextOptions<ScadaDbContext> options)
-        : base(options)
-    {
-    }
+        : base(options) { }
 
     public DbSet<Sensor> Sensors => Set<Sensor>();
 
@@ -19,4 +17,5 @@ public class ScadaDbContext : DbContext
     public DbSet<EventLog> EventLogs => Set<EventLog>();
 
     public DbSet<ProcessedMessage> ProcessedMessages => Set<ProcessedMessage>();
+
 }

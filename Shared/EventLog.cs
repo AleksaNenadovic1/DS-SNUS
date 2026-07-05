@@ -1,5 +1,8 @@
 ﻿namespace Shared.Models;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
+[Table("event_logs")]
 public class EventLog
 {
     public long Id { get; set; }
@@ -11,4 +14,5 @@ public class EventLog
     public string EventType { get; set; } = "";
 
     public string Description { get; set; } = "";
+
 }

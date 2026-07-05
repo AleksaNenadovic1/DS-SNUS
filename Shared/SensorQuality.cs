@@ -2,7 +2,9 @@
 
 public enum SensorQuality
 {
+
     GOOD,
     BAD,
     UNCERTAIN
+
 }

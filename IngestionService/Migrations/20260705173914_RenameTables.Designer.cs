@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IngestionService.Migrations
 {
     [DbContext(typeof(ScadaDbContext))]
-    [Migration("20260703201740_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260705173914_RenameTables")]
+    partial class RenameTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ConsensusValues");
+                    b.ToTable("consensus_values");
                 });
 
             modelBuilder.Entity("Shared.Models.EventLog", b =>
@@ -68,7 +68,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventLogs");
+                    b.ToTable("event_logs");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>
@@ -101,7 +101,7 @@ namespace IngestionService.Migrations
 
                     b.HasIndex("SensorId");
 
-                    b.ToTable("Measurements");
+                    b.ToTable("measurements");
                 });
 
             modelBuilder.Entity("Shared.Models.ProcessedMessage", b =>
@@ -123,7 +123,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProcessedMessages");
+                    b.ToTable("processed_messages");
                 });
 
             modelBuilder.Entity("Shared.Models.Sensor", b =>
@@ -164,7 +164,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sensors");
+                    b.ToTable("sensors");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>

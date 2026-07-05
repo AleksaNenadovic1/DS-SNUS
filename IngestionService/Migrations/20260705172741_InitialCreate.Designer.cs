@@ -3,6 +3,7 @@ using System;
 using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IngestionService.Migrations
 {
     [DbContext(typeof(ScadaDbContext))]
-    partial class ScadaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705172741_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("consensus_values");
+                    b.ToTable("ConsensusValue");
                 });
 
             modelBuilder.Entity("Shared.Models.EventLog", b =>
@@ -65,7 +68,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("event_logs");
+                    b.ToTable("EventLog");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>
@@ -98,7 +101,7 @@ namespace IngestionService.Migrations
 
                     b.HasIndex("SensorId");
 
-                    b.ToTable("measurements");
+                    b.ToTable("Measurement");
                 });
 
             modelBuilder.Entity("Shared.Models.ProcessedMessage", b =>
@@ -120,7 +123,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("processed_messages");
+                    b.ToTable("ProcessedMessage");
                 });
 
             modelBuilder.Entity("Shared.Models.Sensor", b =>
@@ -161,7 +164,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("sensors");
+                    b.ToTable("Sensor");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>

@@ -13,7 +13,7 @@ namespace IngestionService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ConsensusValues",
+                name: "ConsensusValue",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -23,11 +23,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConsensusValues", x => x.Id);
+                    table.PrimaryKey("PK_ConsensusValue", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventLogs",
+                name: "EventLog",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -39,11 +39,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EventLogs", x => x.Id);
+                    table.PrimaryKey("PK_EventLog", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProcessedMessages",
+                name: "ProcessedMessage",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -54,11 +54,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProcessedMessages", x => x.Id);
+                    table.PrimaryKey("PK_ProcessedMessage", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sensors",
+                name: "Sensor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -75,11 +75,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sensors", x => x.Id);
+                    table.PrimaryKey("PK_Sensor", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Measurements",
+                name: "Measurement",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -93,18 +93,18 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Measurements", x => x.Id);
+                    table.PrimaryKey("PK_Measurement", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Measurements_Sensors_SensorId",
+                        name: "FK_Measurement_Sensor_SensorId",
                         column: x => x.SensorId,
-                        principalTable: "Sensors",
+                        principalTable: "Sensor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Measurements_SensorId",
-                table: "Measurements",
+                name: "IX_Measurement_SensorId",
+                table: "Measurement",
                 column: "SensorId");
         }
 
@@ -112,19 +112,19 @@ namespace IngestionService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ConsensusValues");
+                name: "ConsensusValue");
 
             migrationBuilder.DropTable(
-                name: "EventLogs");
+                name: "EventLog");
 
             migrationBuilder.DropTable(
-                name: "Measurements");
+                name: "Measurement");
 
             migrationBuilder.DropTable(
-                name: "ProcessedMessages");
+                name: "ProcessedMessage");
 
             migrationBuilder.DropTable(
-                name: "Sensors");
+                name: "Sensor");
         }
     }
 }
