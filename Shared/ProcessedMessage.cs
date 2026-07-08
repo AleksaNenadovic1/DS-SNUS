@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("processed_messages")]
 public class ProcessedMessage
 {
     public long Id { get; set; }

@@ -13,7 +13,7 @@ namespace IngestionService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ConsensusValue",
+                name: "ConsensusValues",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -23,11 +23,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConsensusValue", x => x.Id);
+                    table.PrimaryKey("PK_ConsensusValues", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventLog",
+                name: "EventLogs",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -39,11 +39,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EventLog", x => x.Id);
+                    table.PrimaryKey("PK_EventLogs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProcessedMessage",
+                name: "ProcessedMessages",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -54,16 +54,19 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProcessedMessage", x => x.Id);
+                    table.PrimaryKey("PK_ProcessedMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sensor",
+                name: "Sensors",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
+                    IsTested = table.Column<bool>(type: "boolean", nullable: false),
+                    IsTestedTerminal = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Quality = table.Column<int>(type: "integer", nullable: false),
                     MinTemperature = table.Column<double>(type: "double precision", nullable: false),
@@ -75,11 +78,11 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sensor", x => x.Id);
+                    table.PrimaryKey("PK_Sensors", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Measurement",
+                name: "Measurements",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -93,18 +96,18 @@ namespace IngestionService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Measurement", x => x.Id);
+                    table.PrimaryKey("PK_Measurements", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Measurement_Sensor_SensorId",
+                        name: "FK_Measurements_Sensors_SensorId",
                         column: x => x.SensorId,
-                        principalTable: "Sensor",
+                        principalTable: "Sensors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Measurement_SensorId",
-                table: "Measurement",
+                name: "IX_Measurements_SensorId",
+                table: "Measurements",
                 column: "SensorId");
         }
 
@@ -112,19 +115,19 @@ namespace IngestionService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ConsensusValue");
+                name: "ConsensusValues");
 
             migrationBuilder.DropTable(
-                name: "EventLog");
+                name: "EventLogs");
 
             migrationBuilder.DropTable(
-                name: "Measurement");
+                name: "Measurements");
 
             migrationBuilder.DropTable(
-                name: "ProcessedMessage");
+                name: "ProcessedMessages");
 
             migrationBuilder.DropTable(
-                name: "Sensor");
+                name: "Sensors");
         }
     }
 }

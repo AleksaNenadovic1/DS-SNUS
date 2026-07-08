@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "DS-SNUS",
+    "Projects": [
+      {
+        "Path": "ConsensusService\\ConsensusService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "NotificationService\\NotificationService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Ingress\\Ingress.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "IngestionService\\IngestionService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SensorSimulator\\SensorSimulator.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("consensus_values")]
 public class ConsensusValue
 {
 

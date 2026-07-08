@@ -4,7 +4,7 @@ using Shared.Dto;
 var http = new HttpClient();
 
 // change this to your real port
-var baseUrl = "https://localhost:7217/api/ingest/sensor";
+var baseUrl = "http://localhost:5141/api/ingest/sensor";
 
 // simulate 5 sensors
 var sensors = Enumerable.Range(1, 5).ToList();

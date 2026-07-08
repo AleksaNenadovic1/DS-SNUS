@@ -2,7 +2,6 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("event_logs")]
 public class EventLog
 {
     public long Id { get; set; }

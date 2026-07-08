@@ -15,10 +15,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.Services.CreateScope().ServiceProvider
-    .GetRequiredService<ScadaDbContext>()
-    .Database.Migrate();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -3,7 +3,6 @@
 using Shared.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("measurements")]
 public class Measurement
 {
     public long Id { get; set; }
