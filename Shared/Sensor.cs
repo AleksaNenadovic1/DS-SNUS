@@ -11,10 +11,6 @@ public class Sensor
 
     public bool IsBlocked { get; set; }
 
-    public bool IsTested { get; set; }
-
-    public bool IsTestedTerminal { get; set; }
-
     public bool IsActive { get; set; }
 
     public SensorQuality Quality { get; set; }

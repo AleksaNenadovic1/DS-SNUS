@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IngestionService.Migrations
 {
     [DbContext(typeof(ScadaDbContext))]
-    [Migration("20260708163136_InitialCreate")]
+    [Migration("20260708163930_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -147,12 +147,6 @@ namespace IngestionService.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsBlocked")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTested")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTestedTerminal")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastSeen")

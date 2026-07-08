@@ -65,8 +65,6 @@ namespace IngestionService.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     IsBlocked = table.Column<bool>(type: "boolean", nullable: false),
-                    IsTested = table.Column<bool>(type: "boolean", nullable: false),
-                    IsTestedTerminal = table.Column<bool>(type: "boolean", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     Quality = table.Column<int>(type: "integer", nullable: false),
                     MinTemperature = table.Column<double>(type: "double precision", nullable: false),

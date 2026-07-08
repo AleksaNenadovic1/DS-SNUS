@@ -146,12 +146,6 @@ namespace IngestionService.Migrations
                     b.Property<bool>("IsBlocked")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsTested")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTestedTerminal")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
