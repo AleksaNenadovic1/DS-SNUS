@@ -38,7 +38,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("consensus_values");
+                    b.ToTable("ConsensusValues");
                 });
 
             modelBuilder.Entity("Shared.Models.EventLog", b =>
@@ -140,7 +140,13 @@ namespace IngestionService.Migrations
                     b.Property<double>("Alarm3Limit")
                         .HasColumnType("double precision");
 
+                    b.Property<DateTime?>("BlockedUntil")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsBlocked")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastSeen")

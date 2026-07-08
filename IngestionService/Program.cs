@@ -1,3 +1,4 @@
+using IngestionService.Background;
 using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ScadaDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHostedService<SensorHealthMonitor>();
 
 builder.Services.AddControllers();
 

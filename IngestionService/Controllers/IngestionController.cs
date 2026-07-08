@@ -14,9 +14,7 @@ public class IngestionController : ControllerBase
 
     public IngestionController(ScadaDbContext context)
     {
-
         _context = context;
-
     }
 
     [HttpPost("sensor")]
@@ -29,18 +27,12 @@ public class IngestionController : ControllerBase
             .FirstOrDefaultAsync(
                 s => s.Id == dto.SensorId);
 
-
-
         if (sensor == null)
         {
             return BadRequest("Sensor does not exist");
         }
 
-
-
         sensor.LastSeen = DateTime.UtcNow;
-
-
 
         var measurement = new Measurement
         {
@@ -58,15 +50,9 @@ public class IngestionController : ControllerBase
             IsConsensus = false
         };
 
-
-
         _context.Measurements.Add(measurement);
 
-
-
         await _context.SaveChangesAsync();
-
-
 
         if (dto.AlarmPriority != AlarmPriority.None)
         {
@@ -87,14 +73,24 @@ public class IngestionController : ControllerBase
                 };
 
 
+            var message =
+                $"ALARM {dto.AlarmPriority}: Temperature {dto.Value:F2}";
+
+
             Console.WriteLine(
-                $"ALARM {dto.AlarmPriority}: Sensor {dto.SensorId}, Value {dto.Value:F2}"
+                $"Sensor {dto.SensorId}: {message}"
             );
 
 
             Console.ResetColor();
-        }
 
+            await EventLogger.LogAsync(
+                _context,
+                dto.SensorId,
+                "ALARM",
+                message
+            );
+        }
 
         return Ok();
     }
@@ -103,7 +99,7 @@ public class IngestionController : ControllerBase
     public async Task<IActionResult> GetActiveSensors()
     {
         var sensors = await _context.Sensors
-            .Where(s => s.IsActive)
+            .Where(s => s.IsActive && !s.IsBlocked)
             .Select(s => new ActiveSensorDto
             {
                 Id = s.Id,
@@ -124,8 +120,33 @@ public class IngestionController : ControllerBase
             })
             .ToListAsync();
 
-
         return Ok(sensors);
     }
 
+    [HttpPost("sensor/{id}/block")]
+    public async Task<IActionResult> BlockSensor(int id)
+    {
+        var sensor =
+            await _context.Sensors
+            .FirstOrDefaultAsync(s => s.Id == id);
+
+        if (sensor == null)
+            return NotFound();
+
+
+        sensor.IsBlocked = true;
+
+        sensor.IsActive = false;
+
+        sensor.BlockedUntil =
+            DateTime.UtcNow.AddSeconds(30);
+
+
+        await _context.SaveChangesAsync();
+
+
+        return Ok(
+            $"Sensor {id} blocked for 30 seconds"
+        );
+    }
 }

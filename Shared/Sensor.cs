@@ -3,13 +3,12 @@
 using Shared.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
+[Table("sensors")]
 public class Sensor
 {
     public int Id { get; set; }
 
     public string Name { get; set; } = "";
-
-    public bool IsBlocked { get; set; }
 
     public bool IsActive { get; set; }
 
