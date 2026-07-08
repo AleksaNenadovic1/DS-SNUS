@@ -1,300 +1,145 @@
-﻿using Shared.Dto;
+﻿using System.Net.Http.Json;
+using Shared.Dto;
 using Shared.Enums;
-using System.Collections.Concurrent;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
 
 
 var http = new HttpClient();
-
 
 var baseUrl =
     "http://localhost:5141/api/ingest/sensor";
 
 
-var activeSensorsUrl =
-    "http://localhost:5141/api/ingest/sensors/active";
-
-
 var random = new Random();
 
 
-var commandQueue =
-    new ConcurrentQueue<string>();
-
-// blocked sensor -> unblock time
-var blockedSensors =
-    new Dictionary<int, DateTime>();
-
-
-Console.WriteLine(
-    "Sensor simulator started..."
-);
-
-
-Console.WriteLine(
-    "Commands:"
-);
-
-Console.WriteLine(
-    "block <sensorId>"
-);
-
-Console.WriteLine(
-    "unblock <sensorId>"
-);
-
-// Console command listener
-_ = Task.Run(() =>
-{
-    while (true)
-    {
-        var command = Console.ReadLine();
-
-        if (!string.IsNullOrWhiteSpace(command))
-        {
-            commandQueue.Enqueue(command);
-        }
-    }
-});
+Console.WriteLine("Sensor simulator started...");
 
 
 while (true)
 {
-    while (commandQueue.TryDequeue(out var command))
-    {
-        HandleCommand(
-            command,
-            blockedSensors,
-            http
-        );
-    }
 
-    try
-    {
-        var sensors =
-            await http.GetFromJsonAsync<List<ActiveSensorDto>>(
-                activeSensorsUrl)
-            ??
-            new List<ActiveSensorDto>();
+    var sensors =
+        await http.GetFromJsonAsync<List<ActiveSensorDto>>
+        (
+            "http://localhost:5141/api/ingest/sensors/active"
+        )
+        ?? new List<ActiveSensorDto>();
 
-        foreach (var sensor in sensors)
+
+    foreach (var sensor in sensors)
+    {
+
+        //double value =
+        //    sensor.MinTemperature +
+        //    random.NextDouble()
+        //    *
+        //    (sensor.MaxTemperature - sensor.MinTemperature);
+
+        double value = random.NextDouble() * 100; // Simulate a random temperature value between 0 and 100
+
+
+
+        AlarmPriority priority = AlarmPriority.None;
+
+
+        if (value <= sensor.MinTemperature - sensor.Alarm3Limit ||
+            value >= sensor.MaxTemperature + sensor.Alarm3Limit)
         {
-
-            // blocked simulation
-
-            if (blockedSensors.ContainsKey(sensor.Id))
-            {
-
-                if (blockedSensors[sensor.Id] >
-                    DateTime.UtcNow)
-                {
-
-                    Console.WriteLine(
-                        $"Sensor {sensor.Id} is blocked."
-                    );
-
-                    continue;
-
-                }
-                else
-                {
-
-                    blockedSensors.Remove(sensor.Id);
-
-                }
-
-            }
-
-            // Generate temperature according to sensor range
-
-            var temperature =
-                sensor.MinTemperature +
-                random.NextDouble()
-                *
-                (
-                    sensor.MaxTemperature -
-                    sensor.MinTemperature
-                );
-
-            var alarm =
-                DetermineAlarm(
-                    temperature,
-                    sensor
-                );
-
-            var dto =
-                new SensorIngestDto
-                {
-
-                    SensorId = sensor.Id,
-
-                    Value = temperature,
-
-                    Timestamp =
-                        DateTime.UtcNow,
-
-                    AlarmPriority = alarm,
-
-                    Quality =
-                        sensor.Quality
-
-                };
-
-            var response =
-                await http.PostAsJsonAsync(
-                    baseUrl,
-                    dto);
-
-            if (response.IsSuccessStatusCode)
-            {
-
-                PrintSensorValue(
-                    sensor,
-                    temperature,
-                    alarm
-                );
-
-            }
-            else
-            {
-
-                Console.WriteLine(
-                    $"Sensor {sensor.Id} failed: {response.StatusCode}"
-                );
-
-            }
-
+            priority = AlarmPriority.High;
+        }
+        else if (value <= sensor.MinTemperature - sensor.Alarm2Limit ||
+                 value >= sensor.MaxTemperature + sensor.Alarm2Limit)
+        {
+            priority = AlarmPriority.Medium;
+        }
+        else if (value <= sensor.MinTemperature - sensor.Alarm1Limit ||
+                 value >= sensor.MaxTemperature + sensor.Alarm1Limit)
+        {
+            priority = AlarmPriority.Low;
         }
 
+        PrintValue(sensor.Id, value, priority);
+
+
+
+        var dto = new SensorIngestDto
+        {
+            SensorId = sensor.Id,
+
+            Value = value,
+
+            Timestamp = DateTime.UtcNow,
+
+            AlarmPriority = priority,
+
+            Quality = sensor.Quality
+        };
+
+
+
+        try
+        {
+
+            var response =
+                await http.PostAsJsonAsync(baseUrl, dto);
+
+
+            //Console.WriteLine(
+            //    $"Server response: {response.StatusCode}"
+            //);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
 
     }
-    catch (Exception ex)
-    {
-
-        Console.WriteLine(
-            $"Simulator error: {ex.Message}"
-        );
-
-    }
-
 
 
     await Task.Delay(2000);
 
 }
 
-static AlarmPriority DetermineAlarm(
+
+
+static void PrintValue(
+    int sensorId,
     double value,
-    ActiveSensorDto sensor)
+    AlarmPriority priority)
 {
 
-    // Highest priority wins
-
-    if (value >= sensor.Alarm3Limit)
-        return AlarmPriority.High;
+    ConsoleColor old =
+        Console.ForegroundColor;
 
 
-    if (value >= sensor.Alarm2Limit)
-        return AlarmPriority.Medium;
-
-
-    if (value >= sensor.Alarm1Limit)
-        return AlarmPriority.Low;
-
-
-    return AlarmPriority.None;
-
-}
-
-static void PrintSensorValue(
-    ActiveSensorDto sensor,
-    double value,
-    AlarmPriority alarm)
-{
-
-    if (alarm == AlarmPriority.None)
+    switch (priority)
     {
+        case AlarmPriority.Low:
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            break;
 
-        Console.WriteLine(
-            $"Sensor {sensor.Id}: {value:F2}°C"
-        );
 
-        return;
+        case AlarmPriority.Medium:
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            break;
 
+
+        case AlarmPriority.High:
+            Console.ForegroundColor = ConsoleColor.Red;
+            break;
+
+
+        default:
+            Console.ForegroundColor = ConsoleColor.White;
+            break;
     }
-
-
-
-    Console.ForegroundColor =
-        alarm switch
-        {
-
-            AlarmPriority.Low =>
-                ConsoleColor.Yellow,
-
-
-            AlarmPriority.Medium =>
-                ConsoleColor.DarkYellow,
-
-
-            AlarmPriority.High =>
-                ConsoleColor.Red,
-
-
-            _ =>
-                ConsoleColor.White
-        };
-
 
 
     Console.WriteLine(
-        $"ALARM {alarm}: Sensor {sensor.Id}, Value {value:F2}°C"
+        $"Sensor {sensorId}: {value:F2}°C Alarm:{priority}"
     );
 
 
-    Console.ResetColor();
-
-}
-
-static async Task HandleCommand(
-    string command,
-    Dictionary<int, DateTime> blockedSensors,
-    HttpClient http)
-{
-    var parts =
-        command.Split(' ');
-
-    if (parts.Length != 2)
-        return;
-
-    if (!int.TryParse(parts[1], out int sensorId))
-        return;
-
-    switch (parts[0].ToLower())
-    {
-        case "block":
-
-            Task block = http.PostAsync(
-                $"http://localhost:5141/api/ingest/sensor/{sensorId}/block",
-                null
-            );
-
-            await block;
-
-            Console.WriteLine(
-                $"Requested block for sensor {sensorId}"
-            );
-
-            break;
-
-        default:
-
-            Console.WriteLine(
-                "Unknown command."
-            );
-
-            break;
-    }
-
+    Console.ForegroundColor = old;
 }

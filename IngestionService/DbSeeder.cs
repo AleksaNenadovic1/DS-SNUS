@@ -18,12 +18,12 @@ public static class DbSeeder
                 Id = 1,
                 Name = "Sensor 1",
 
-                MinTemperature = 15,
-                MaxTemperature = 25,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 22,
-                Alarm2Limit = 24,
-                Alarm3Limit = 25,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -36,12 +36,12 @@ public static class DbSeeder
                 Id = 2,
                 Name = "Sensor 2",
 
-                MinTemperature = 20,
-                MaxTemperature = 35,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 30,
-                Alarm2Limit = 33,
-                Alarm3Limit = 35,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -54,12 +54,12 @@ public static class DbSeeder
                 Id = 3,
                 Name = "Sensor 3",
 
-                MinTemperature = 25,
-                MaxTemperature = 45,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 38,
-                Alarm2Limit = 42,
-                Alarm3Limit = 45,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -73,11 +73,11 @@ public static class DbSeeder
                 Name = "Sensor 4",
 
                 MinTemperature = 30,
-                MaxTemperature = 55,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 45,
-                Alarm2Limit = 50,
-                Alarm3Limit = 55,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.UNCERTAIN,
 
@@ -90,12 +90,12 @@ public static class DbSeeder
                 Id = 5,
                 Name = "Sensor 5",
 
-                MinTemperature = 10,
-                MaxTemperature = 30,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 25,
-                Alarm2Limit = 28,
-                Alarm3Limit = 30,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -108,12 +108,12 @@ public static class DbSeeder
                 Id = 6,
                 Name = "Sensor 6",
 
-                MinTemperature = 35,
+                MinTemperature = 30,
                 MaxTemperature = 70,
 
-                Alarm1Limit = 55,
-                Alarm2Limit = 65,
-                Alarm3Limit = 70,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -126,12 +126,12 @@ public static class DbSeeder
                 Id = 7,
                 Name = "Sensor 7",
 
-                MinTemperature = 20,
-                MaxTemperature = 40,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 32,
-                Alarm2Limit = 36,
-                Alarm3Limit = 40,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -144,12 +144,12 @@ public static class DbSeeder
                 Id = 8,
                 Name = "Sensor 8",
 
-                MinTemperature = 15,
-                MaxTemperature = 60,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 40,
-                Alarm2Limit = 50,
-                Alarm3Limit = 60,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.BAD,
 
@@ -162,12 +162,12 @@ public static class DbSeeder
                 Id = 9,
                 Name = "Sensor 9",
 
-                MinTemperature = 40,
-                MaxTemperature = 80,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 60,
-                Alarm2Limit = 70,
-                Alarm3Limit = 80,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 
@@ -180,12 +180,12 @@ public static class DbSeeder
                 Id = 10,
                 Name = "Sensor 10",
 
-                MinTemperature = 5,
-                MaxTemperature = 15,
+                MinTemperature = 30,
+                MaxTemperature = 70,
 
-                Alarm1Limit = 12,
-                Alarm2Limit = 14,
-                Alarm3Limit = 15,
+                Alarm1Limit = 0,
+                Alarm2Limit = 10,
+                Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
 

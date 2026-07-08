@@ -1,25 +1,23 @@
-var builder = WebApplication.CreateBuilder(args);
+using ConsensusService;
+using IngestionService.Data;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-builder.Services.AddControllers();
+var builder = Host.CreateApplicationBuilder(args);
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
-var app = builder.Build();
+builder.Services.AddDbContext<ScadaDbContext>(
+    options =>
+    {
+        options.UseNpgsql(
+            builder.Configuration
+            .GetConnectionString("DefaultConnection")
+        );
+    });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
 
-    app.MapOpenApi();
+builder.Services.AddHostedService<ConsensusWorker>();
 
-}
 
-app.UseHttpsRedirection();
+var host = builder.Build();
 
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+host.Run();
