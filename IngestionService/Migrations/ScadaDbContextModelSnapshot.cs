@@ -38,7 +38,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ConsensusValues");
+                    b.ToTable("consensus_values");
                 });
 
             modelBuilder.Entity("Shared.Models.EventLog", b =>
@@ -65,7 +65,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventLogs");
+                    b.ToTable("event_logs");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>
@@ -98,7 +98,7 @@ namespace IngestionService.Migrations
 
                     b.HasIndex("SensorId");
 
-                    b.ToTable("Measurements");
+                    b.ToTable("measurements");
                 });
 
             modelBuilder.Entity("Shared.Models.ProcessedMessage", b =>
@@ -120,7 +120,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProcessedMessages");
+                    b.ToTable("processed_messages");
                 });
 
             modelBuilder.Entity("Shared.Models.Sensor", b =>
@@ -143,9 +143,6 @@ namespace IngestionService.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsBlocked")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
@@ -164,7 +161,7 @@ namespace IngestionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sensors");
+                    b.ToTable("sensors");
                 });
 
             modelBuilder.Entity("Shared.Models.Measurement", b =>

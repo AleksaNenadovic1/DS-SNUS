@@ -1,6 +1,6 @@
 ﻿namespace Shared.Dto;
 
-using System.ComponentModel.DataAnnotations.Schema;
+using Shared.Enums;
 
 public class SensorIngestDto
 {
@@ -10,4 +10,7 @@ public class SensorIngestDto
 
     public DateTime Timestamp { get; set; }
 
+    public AlarmPriority AlarmPriority { get; set; }
+
+    public SensorQuality Quality { get; set; }
 }

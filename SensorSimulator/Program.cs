@@ -1,63 +1,140 @@
 ﻿using System.Net.Http.Json;
 using Shared.Dto;
+using Shared.Enums;
+
 
 var http = new HttpClient();
 
-// change this to your real port
-var baseUrl = "http://localhost:5141/api/ingest/sensor";
+var baseUrl =
+    "http://localhost:5141/api/ingest/sensor";
 
-// simulate 5 sensors
-var sensors = Enumerable.Range(1, 5).ToList();
 
 var random = new Random();
 
+
 Console.WriteLine("Sensor simulator started...");
+
 
 while (true)
 {
 
-    foreach (var sensorId in sensors)
+    var sensors =
+        await http.GetFromJsonAsync<List<ActiveSensorDto>>
+        (
+            "http://localhost:5141/api/ingest/sensors/active"
+        )
+        ?? new List<ActiveSensorDto>();
+
+
+    foreach (var sensor in sensors)
     {
+
+        //double value =
+        //    sensor.MinTemperature +
+        //    random.NextDouble()
+        //    *
+        //    (sensor.MaxTemperature - sensor.MinTemperature);
+
+        double value = random.NextDouble() * 100; // Simulate a random temperature value between 0 and 100
+
+
+
+        AlarmPriority priority = AlarmPriority.None;
+
+
+        if (value >= sensor.Alarm3Limit)
+            priority = AlarmPriority.High;
+
+        else if (value >= sensor.Alarm2Limit)
+            priority = AlarmPriority.Medium;
+
+        else if (value >= sensor.Alarm1Limit)
+            priority = AlarmPriority.Low;
+
+
+
+        PrintValue(sensor.Id, value, priority);
+
+
 
         var dto = new SensorIngestDto
         {
+            SensorId = sensor.Id,
 
-            SensorId = sensorId,
-            Value = 20 + random.NextDouble() * 10, // 20–30°C
-            Timestamp = DateTime.UtcNow
+            Value = value,
 
+            Timestamp = DateTime.UtcNow,
+
+            AlarmPriority = priority,
+
+            Quality = sensor.Quality
         };
+
+
 
         try
         {
 
-            var response = await http.PostAsJsonAsync(baseUrl, dto);
+            var response =
+                await http.PostAsJsonAsync(baseUrl, dto);
 
-            if (response.IsSuccessStatusCode)
-            {
 
-                Console.WriteLine($"Sensor {sensorId} sent value {dto.Value:F2}");
-
-            }
-
-            else
-            {
-
-                Console.WriteLine($"Failed for sensor {sensorId}: {response.StatusCode}");
-
-            }
+            //Console.WriteLine(
+            //    $"Server response: {response.StatusCode}"
+            //);
 
         }
-
         catch (Exception ex)
         {
-
-            Console.WriteLine($"Error sensor {sensorId}: {ex.Message}");
-
+            Console.WriteLine(ex.Message);
         }
 
     }
 
-    await Task.Delay(2000); // every 2 seconds
 
+    await Task.Delay(2000);
+
+}
+
+
+
+static void PrintValue(
+    int sensorId,
+    double value,
+    AlarmPriority priority)
+{
+
+    ConsoleColor old =
+        Console.ForegroundColor;
+
+
+    switch (priority)
+    {
+        case AlarmPriority.Low:
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            break;
+
+
+        case AlarmPriority.Medium:
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            break;
+
+
+        case AlarmPriority.High:
+            Console.ForegroundColor = ConsoleColor.Red;
+            break;
+
+
+        default:
+            Console.ForegroundColor = ConsoleColor.White;
+            break;
+    }
+
+
+    Console.WriteLine(
+        $"Sensor {sensorId}: {value:F2}°C Alarm:{priority}"
+    );
+
+
+    Console.ForegroundColor = old;
 }
