@@ -1,6 +1,9 @@
-﻿using System.Net.Http.Json;
+﻿using Shared;
 using Shared.Dto;
 using Shared.Enums;
+using Shared.Security;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 
 var http = new HttpClient();
@@ -14,6 +17,7 @@ var random = new Random();
 
 Console.WriteLine("Sensor simulator started...");
 
+long messageId = 1;
 
 while (true)
 {
@@ -64,6 +68,7 @@ while (true)
 
         var dto = new SensorIngestDto
         {
+
             SensorId = sensor.Id,
 
             Value = value,
@@ -72,7 +77,13 @@ while (true)
 
             AlarmPriority = priority,
 
-            Quality = sensor.Quality
+            Quality = sensor.Quality,
+
+
+            MessageId = messageId++,
+
+            SentAt = DateTime.UtcNow
+
         };
 
 
@@ -80,13 +91,47 @@ while (true)
         try
         {
 
-            var response =
-                await http.PostAsJsonAsync(baseUrl, dto);
+            string json =
+                JsonSerializer.Serialize(dto);
 
+
+
+
+            var encrypted =
+                AesEncryption.Encrypt(json);
+
+
+
+
+            var secure =
+                new SecureMessageDto
+                {
+                    Data = encrypted.Data,
+
+                    IV = encrypted.IV,
+
+                    Signature =
+                        EcdsaSignature.Sign(json)
+                };
+
+
+            var response =
+                await http.PostAsJsonAsync(baseUrl, secure);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine(
+                    $"Server response: {response.StatusCode} - {error}"
+                );
+            }
 
             //Console.WriteLine(
             //    $"Server response: {response.StatusCode}"
             //);
+
+            
 
         }
         catch (Exception ex)

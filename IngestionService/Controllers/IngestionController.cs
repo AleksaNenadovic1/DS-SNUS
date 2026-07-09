@@ -1,28 +1,109 @@
-﻿using IngestionService.Data;
+﻿using IngestionService;
+using IngestionService.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 using Shared.Dto;
 using Shared.Enums;
 using Shared.Models;
+using Shared.Security;
+using System.Text.Json;
 
 [ApiController]
 [Route("api/ingest")]
 public class IngestionController : ControllerBase
 {
 
-    private readonly ScadaDbContext _context;
-
     private readonly HttpClient _http = new();
 
-    public IngestionController(ScadaDbContext context)
+    private readonly ScadaDbContext _context;
+
+    private readonly SensorRateLimiter _limiter;
+
+    public IngestionController(ScadaDbContext context, SensorRateLimiter limiter)
     {
         _context = context;
+
+        _limiter = limiter;
     }
 
     [HttpPost("sensor")]
     public async Task<IActionResult> IngestSensor(
-    [FromBody] SensorIngestDto dto)
+    [FromBody] SecureMessageDto message)
     {
+
+        string json;
+
+
+        try
+        {
+
+            json =
+                AesEncryption.Decrypt(
+                    message.Data,
+                    message.IV);
+
+        }
+        catch
+        {
+            return BadRequest(
+                "Invalid encryption");
+        }
+
+
+
+        if (!EcdsaSignature.Verify(
+                json,
+                message.Signature))
+        {
+            return BadRequest(
+                "Invalid signature");
+        }
+
+
+
+        var dto =
+            JsonSerializer.Deserialize<SensorIngestDto>(
+                json);
+
+
+
+        if (dto == null)
+        {
+            return BadRequest();
+        }
+
+        if (!_limiter.Allowed(dto.SensorId))
+        {
+            return StatusCode(
+                429,
+                "Too many requests");
+        }
+
+
+        var replay =
+            await _context.ProcessedMessages
+            .AnyAsync(x =>
+                x.SensorId == dto.SensorId &&
+                x.MessageId == dto.MessageId);
+
+
+
+        if (replay)
+        {
+            return BadRequest(
+                "Replay attack detected");
+        }
+
+
+
+        if (DateTime.UtcNow - dto.SentAt >
+            TimeSpan.FromSeconds(30))
+        {
+            return BadRequest(
+                "Old message");
+        }
+
 
         var sensor =
             await _context.Sensors
@@ -50,9 +131,23 @@ public class IngestionController : ControllerBase
             Quality = dto.Quality,
 
             IsConsensus = false
+
         };
 
         _context.Measurements.Add(measurement);
+
+        await _context.SaveChangesAsync();
+
+        _context.ProcessedMessages.Add(
+            new ProcessedMessage
+            {
+                SensorId = dto.SensorId,
+
+                MessageId = dto.MessageId,
+
+                Timestamp = DateTime.UtcNow
+            });
+
 
         await _context.SaveChangesAsync();
 
@@ -70,6 +165,24 @@ public class IngestionController : ControllerBase
             await _http.PostAsJsonAsync(
                 "http://localhost:5068/api/notifications/alarm",
                 notification);
+
+            var messageConsole =
+                $"ALARM {dto.AlarmPriority}: Temperature {dto.Value:F2}";
+
+
+            Console.WriteLine(
+                $"Sensor {dto.SensorId}: {messageConsole}"
+            );
+
+
+            Console.ResetColor();
+
+            await EventLogger.LogAsync(
+                _context,
+                dto.SensorId,
+                "ALARM",
+                messageConsole
+            );
         }
 
         return Ok();

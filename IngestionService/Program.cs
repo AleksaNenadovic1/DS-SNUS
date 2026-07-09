@@ -1,3 +1,4 @@
+using IngestionService;
 using IngestionService.Background;
 using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<ScadaDbContext>(options =>
 builder.Services.AddHostedService<SensorHealthMonitor>();
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton<SensorRateLimiter>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

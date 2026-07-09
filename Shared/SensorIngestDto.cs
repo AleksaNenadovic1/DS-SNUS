@@ -13,4 +13,12 @@ public class SensorIngestDto
     public AlarmPriority AlarmPriority { get; set; }
 
     public SensorQuality Quality { get; set; }
+
+
+    // Security
+
+    public long MessageId { get; set; }
+
+    public DateTime SentAt { get; set; }
+
 }
