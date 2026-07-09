@@ -1,5 +1,6 @@
 ﻿using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 using Shared.Models;
 
 namespace ConsensusService;
@@ -79,7 +80,10 @@ public class ConsensusWorker : BackgroundService
         var measurements =
             await context.Measurements
             .Where(m =>
-                m.Timestamp >= from)
+                m.Timestamp >= from &&
+                m.Sensor.IsActive &&
+                !m.Sensor.IsBlocked &&
+                m.Sensor.Quality == SensorQuality.GOOD)
             .ToListAsync();
 
 
