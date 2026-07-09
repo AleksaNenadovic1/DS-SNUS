@@ -75,6 +75,7 @@ public class SensorHealthMonitor : BackgroundService
                 sensor.BlockedUntil <= now)
             {
                 sensor.IsBlocked = false;
+                sensor.Quality = Shared.Enums.SensorQuality.GOOD;
 
                 Console.WriteLine(
                     $"Sensor {sensor.Id} block expired."
@@ -83,6 +84,7 @@ public class SensorHealthMonitor : BackgroundService
 
             if (
                 sensor.IsActive &&
+                sensor.LastSeen != DateTime.MinValue &&
                 now - sensor.LastSeen
                 >
                 TimeSpan.FromSeconds(10)
@@ -90,6 +92,7 @@ public class SensorHealthMonitor : BackgroundService
             {
 
                 sensor.IsActive = false;
+                sensor.Quality = Shared.Enums.SensorQuality.BAD;
 
 
                 Console.WriteLine(

@@ -75,6 +75,15 @@ public class IngestionController : ControllerBase
 
         if (!_limiter.Allowed(dto.SensorId))
         {
+            await SensorBanningService.BlockSensor(dto.SensorId, _context);
+
+            await EventLogger.LogAsync(
+                _context,
+                dto.SensorId,
+                "SECURITY",
+                "Sensor blocked due to excessive requests"
+            );
+
             return StatusCode(
                 429,
                 "Too many requests");
@@ -185,7 +194,22 @@ public class IngestionController : ControllerBase
             );
         }
 
-        return Ok();
+        return Ok(
+            new IngestResponseDto
+            {
+                SensorId = measurement.SensorId,
+
+                Value = measurement.Temperature,
+
+                AlarmPriority = measurement.AlarmPriority,
+
+                Quality = measurement.Quality,
+
+                Timestamp = measurement.Timestamp,
+
+                Message = "Measurement accepted!"
+            }
+        );
     }
 
     [HttpGet("sensors/active")]
@@ -219,27 +243,19 @@ public class IngestionController : ControllerBase
     [HttpPost("sensor/{id}/block")]
     public async Task<IActionResult> BlockSensor(int id)
     {
-        var sensor =
-            await _context.Sensors
-            .FirstOrDefaultAsync(s => s.Id == id);
 
-        if (sensor == null)
+        var success =
+            await SensorBanningService
+            .BlockSensor(id, _context);
+
+
+        if (!success)
             return NotFound();
-
-
-        sensor.IsBlocked = true;
-
-        sensor.IsActive = false;
-
-        sensor.BlockedUntil =
-            DateTime.UtcNow.AddSeconds(30);
-
-
-        await _context.SaveChangesAsync();
 
 
         return Ok(
             $"Sensor {id} blocked for 30 seconds"
         );
+
     }
 }
