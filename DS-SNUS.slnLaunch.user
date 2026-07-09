@@ -15,6 +15,10 @@
         "Action": "Start"
       },
       {
+        "Path": "MonitorClient\\MonitorClient.csproj",
+        "Action": "Start"
+      },
+      {
         "Path": "Ingress\\Ingress.csproj",
         "Action": "Start"
       },

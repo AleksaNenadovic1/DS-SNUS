@@ -12,6 +12,8 @@ public class IngestionController : ControllerBase
 
     private readonly ScadaDbContext _context;
 
+    private readonly HttpClient _http = new();
+
     public IngestionController(ScadaDbContext context)
     {
         _context = context;
@@ -54,42 +56,20 @@ public class IngestionController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        if (dto.AlarmPriority != AlarmPriority.None)
+        if (measurement.AlarmPriority != AlarmPriority.None)
         {
-            Console.ForegroundColor =
-                dto.AlarmPriority switch
+            var notification =
+                new AlarmNotification
                 {
-                    AlarmPriority.Low =>
-                        ConsoleColor.Yellow,
-
-                    AlarmPriority.Medium =>
-                        ConsoleColor.DarkYellow,
-
-                    AlarmPriority.High =>
-                        ConsoleColor.Red,
-
-                    _ =>
-                        ConsoleColor.White
+                    SensorId = measurement.SensorId,
+                    Value = measurement.Temperature,
+                    Priority = measurement.AlarmPriority,
+                    Timestamp = measurement.Timestamp
                 };
 
-
-            var message =
-                $"ALARM {dto.AlarmPriority}: Temperature {dto.Value:F2}";
-
-
-            Console.WriteLine(
-                $"Sensor {dto.SensorId}: {message}"
-            );
-
-
-            Console.ResetColor();
-
-            await EventLogger.LogAsync(
-                _context,
-                dto.SensorId,
-                "ALARM",
-                message
-            );
+            await _http.PostAsJsonAsync(
+                "http://localhost:5068/api/notifications/alarm",
+                notification);
         }
 
         return Ok();
