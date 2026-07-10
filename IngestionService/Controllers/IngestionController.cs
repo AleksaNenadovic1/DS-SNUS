@@ -172,8 +172,12 @@ public class IngestionController : ControllerBase
                     Timestamp = measurement.Timestamp
                 };
 
+            //await _http.PostAsJsonAsync(
+            //    "http://localhost:5068/api/notifications/alarm",
+            //    notification);
+
             await _http.PostAsJsonAsync(
-                "http://localhost:5068/api/notifications/alarm",
+                "http://notification:8080/api/notifications/alarm",
                 notification);
 
             var messageConsole =

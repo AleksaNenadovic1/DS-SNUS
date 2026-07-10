@@ -6,9 +6,15 @@ Console.Title = "SCADA Monitor Client";
 
 Console.WriteLine("Connecting to NotificationService...");
 
+//var connection =
+//    new HubConnectionBuilder()
+//        .WithUrl("http://localhost:5068/alarmHub")
+//        .WithAutomaticReconnect()
+//        .Build();
+
 var connection =
     new HubConnectionBuilder()
-        .WithUrl("http://localhost:5068/alarmHub")
+        .WithUrl("http://notification:8080/alarmHub")
         .WithAutomaticReconnect()
         .Build();
 

@@ -14,10 +14,11 @@ public static class SensorWorker
 
     private static readonly HttpClient http = new();
 
-
+    //private const string IngestUrl =
+    //    "http://localhost:5141/api/ingest/sensor";
 
     private const string IngestUrl =
-        "http://localhost:5141/api/ingest/sensor";
+        "http://ingestion:8080/api/ingest/sensor";
 
 
 

@@ -11,10 +11,11 @@ class Program
 
     private static readonly HttpClient http = new();
 
-
+    //private const string SensorsUrl =
+    //    "http://localhost:5141/api/ingest/sensors/active";
 
     private const string SensorsUrl =
-        "http://localhost:5141/api/ingest/sensors/active";
+        "http://ingestion:8080/api/ingest/sensors/active";
 
 
 
@@ -259,9 +260,15 @@ class Program
         try
         {
 
+            //var response =
+            //    await http.PostAsync(
+            //        $"http://localhost:5141/api/ingest/sensor/{sensorId}/block",
+            //        null
+            //    );
+
             var response =
                 await http.PostAsync(
-                    $"http://localhost:5141/api/ingest/sensor/{sensorId}/block",
+                    $"http://ingestion:8080/api/ingest/sensor/{sensorId}/block",
                     null
                 );
 
