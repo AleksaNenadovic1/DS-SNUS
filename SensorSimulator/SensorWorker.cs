@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Shared.Configuration;
 using Shared.Dto;
 using Shared.Enums;
 using Shared.Security;
@@ -17,8 +18,8 @@ public static class SensorWorker
     //private const string IngestUrl =
     //    "http://localhost:5141/api/ingest/sensor";
 
-    private const string IngestUrl =
-        "http://ingestion:8080/api/ingest/sensor";
+    private static readonly string IngestUrl =
+        $"{ServerConfiguration.IngestionUrl}/sensor";
 
 
 

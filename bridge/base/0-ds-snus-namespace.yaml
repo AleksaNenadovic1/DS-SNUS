@@ -1,0 +1,8 @@
+#! 0-ds-snus-namespace.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus

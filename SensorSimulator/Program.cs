@@ -1,4 +1,5 @@
 ﻿using Shared.Dto;
+using Shared.Configuration;
 using System.Collections.Concurrent;
 using System.Net.Http.Json;
 
@@ -14,8 +15,8 @@ class Program
     //private const string SensorsUrl =
     //    "http://localhost:5141/api/ingest/sensors/active";
 
-    private const string SensorsUrl =
-        "http://ingestion:8080/api/ingest/sensors/active";
+    private static readonly string SensorsUrl =
+        $"{ServerConfiguration.IngestionUrl}/sensors/active";
 
 
 
@@ -268,7 +269,7 @@ class Program
 
             var response =
                 await http.PostAsync(
-                    $"http://ingestion:8080/api/ingest/sensor/{sensorId}/block",
+                    $"{ServerConfiguration.IngestionUrl}/sensor/{sensorId}/block",
                     null
                 );
 

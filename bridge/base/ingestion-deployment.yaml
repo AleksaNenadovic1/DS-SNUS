@@ -1,0 +1,32 @@
+#! ingestion-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ingestion
+    namespace: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus
+        com.docker.compose.service: ingestion
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ds-snus
+            com.docker.compose.service: ingestion
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ds-snus
+                com.docker.compose.service: ingestion
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: ingestion
+                  image: ds-snus-ingestion:latest
+                  imagePullPolicy: Never
+                  ports:
+                    - containerPort: 8080
+                      name: http

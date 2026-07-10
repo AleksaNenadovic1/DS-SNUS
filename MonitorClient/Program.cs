@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Shared.Configuration;
 using Shared.Dto;
 using Shared.Enums;
 
@@ -14,7 +15,7 @@ Console.WriteLine("Connecting to NotificationService...");
 
 var connection =
     new HubConnectionBuilder()
-        .WithUrl("http://notification:8080/alarmHub")
+        .WithUrl(ServerConfiguration.NotificationHubUrl)
         .WithAutomaticReconnect()
         .Build();
 

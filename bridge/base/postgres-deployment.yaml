@@ -1,0 +1,39 @@
+#! postgres-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: postgres
+    namespace: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus
+        com.docker.compose.service: postgres
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ds-snus
+            com.docker.compose.service: postgres
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ds-snus
+                com.docker.compose.service: postgres
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: postgres
+                  image: postgres:18
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: POSTGRES_DB
+                      value: "SNUS"
+                    - name: POSTGRES_PASSWORD
+                      value: "gorki123"
+                    - name: POSTGRES_USER
+                      value: "postgres"
+                  ports:
+                    - name: postgres-5432
+                      containerPort: 5432

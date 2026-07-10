@@ -1,0 +1,29 @@
+#! consensus-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: consensus
+    namespace: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus
+        com.docker.compose.service: consensus
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ds-snus
+            com.docker.compose.service: consensus
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ds-snus
+                com.docker.compose.service: consensus
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: consensus
+                  image: ds-snus-consensus:latest
+                  imagePullPolicy: Never

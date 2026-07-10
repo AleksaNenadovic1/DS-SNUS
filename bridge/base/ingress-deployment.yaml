@@ -1,0 +1,32 @@
+#! ingress-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ingress
+    namespace: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus
+        com.docker.compose.service: ingress
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ds-snus
+            com.docker.compose.service: ingress
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ds-snus
+                com.docker.compose.service: ingress
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: ingress
+                  image: ds-snus-ingress:v2
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                    - containerPort: 8080
+                      name: http

@@ -1,0 +1,15 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - 0-ds-snus-namespace.yaml
+    - consensus-deployment.yaml
+    - ingestion-deployment.yaml
+    - ingestion-service.yaml
+    - ingress-deployment.yaml
+    - ingress-service.yaml
+    - notification-deployment.yaml
+    - notification-service.yaml
+    - postgres-deployment.yaml
+    - postgres-expose.yaml

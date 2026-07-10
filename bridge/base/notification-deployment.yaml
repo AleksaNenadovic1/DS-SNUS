@@ -1,0 +1,32 @@
+#! notification-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: notification
+    namespace: ds-snus
+    labels:
+        com.docker.compose.project: ds-snus
+        com.docker.compose.service: notification
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ds-snus
+            com.docker.compose.service: notification
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ds-snus
+                com.docker.compose.service: notification
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: notification
+                  image: ds-snus-notification:latest
+                  imagePullPolicy: Never
+                  ports:
+                    - containerPort: 8080
+                      name: http

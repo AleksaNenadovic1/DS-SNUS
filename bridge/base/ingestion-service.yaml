@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: ingestion
+  namespace: ds-snus
+
+spec:
+  selector:
+    com.docker.compose.project: ds-snus
+    com.docker.compose.service: ingestion
+
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
