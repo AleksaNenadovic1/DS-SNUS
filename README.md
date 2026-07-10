@@ -27,8 +27,10 @@
 # U glavnom direktorijumu projekta:
 
 kubectl get nodes
+
 - kubectl apply -k bridge/overlays/desktop
 - kubectl delete namespace ds-snus
+  
 kubectl get pods -n ds-snus
 
 kubectl get svc -n ds-snus 
