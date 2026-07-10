@@ -22,16 +22,14 @@
 - Minikube i kubectl (za Kubernetes)
 
 
-# Docker Compose pokretanje
+# Kubernetes pokretanje
 
 # U glavnom direktorijumu projekta:
 
-docker compose build --no-cache
-
-docker compose up --build
-
 kubectl get nodes
+kubectl apply -k bridge/overlays/desktop
 
-kubectl get pods -n ds-snus
+- kubectl delete namespace ds-snus
+- kubectl get pods -n ds-snus
 
-kubectl get services -n ds-snus
+kubectl get svc -n ds-snus 
