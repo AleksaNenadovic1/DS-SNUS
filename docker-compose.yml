@@ -1,0 +1,63 @@
+services:
+
+  postgres:
+    image: postgres:18
+
+    environment:
+      POSTGRES_DB: SNUS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: gorki123
+
+    ports:
+      - "5432:5432"
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: IngestionService/Dockerfile
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "5141:8080"
+
+  consensus:
+    build:
+      context: .
+      dockerfile: ConsensusService/Dockerfile
+
+    depends_on:
+      - postgres
+
+  notification:
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+
+    depends_on:
+      - postgres
+
+  monitor:
+    build:
+      context: .
+      dockerfile: MonitorClient/Dockerfile
+
+  ingress:
+    build:
+      context: .
+      dockerfile: Ingress/Dockerfile
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - ingestion
+
+  simulator:
+    build:
+      context: .
+      dockerfile: SensorSimulator/Dockerfile
+
+    depends_on:
+      - ingestion

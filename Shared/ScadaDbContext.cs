@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.Models;
 
-namespace IngestionService.Data;
+namespace Shared.Data;
 
 public class ScadaDbContext : DbContext
 {

@@ -2,13 +2,15 @@ using IngestionService;
 using IngestionService.Background;
 using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ScadaDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("IngestionService")));
 
 builder.Services.AddHostedService<SensorStartupInitializer>();
 

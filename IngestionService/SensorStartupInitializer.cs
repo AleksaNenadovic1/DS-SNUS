@@ -1,5 +1,6 @@
 ﻿using IngestionService.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Data;
 
 namespace IngestionService.Background;
 

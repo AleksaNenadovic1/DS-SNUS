@@ -1,7 +1,7 @@
-﻿using IngestionService.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Shared.Enums;
 using Shared.Models;
+using Shared.Data;
 
 namespace ConsensusService;
 

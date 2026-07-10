@@ -7,6 +7,7 @@ using Shared.Dto;
 using Shared.Enums;
 using Shared.Models;
 using Shared.Security;
+using Shared.Data;
 using System.Text.Json;
 
 [ApiController]

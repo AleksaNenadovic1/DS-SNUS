@@ -1,5 +1,6 @@
 ﻿using Shared.Enums;
 using Shared.Models;
+using Shared.Data;
 
 namespace IngestionService.Data;
 
