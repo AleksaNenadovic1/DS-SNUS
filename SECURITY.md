@@ -17,6 +17,12 @@ Svaka poruka sadrži jedinstveni MessageId i vremensku oznaku.
 
 Već obrađene poruke se odbacuju.
 
+## Zaštita od DoS napada
+
+Senzor koji šalje 10 poruka u 1 sekundi se označava kao maliciozan.
+
+Vrednosti već obrađenih poruka se odbacuju i senzor se blokira.
+
 
 ## Validacija podataka
 

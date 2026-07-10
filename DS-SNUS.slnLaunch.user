@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "DS-SNUS",
+    "Projects": [
+      {
+        "Path": "SensorSimulator\\SensorSimulator.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "MonitorClient\\MonitorClient.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

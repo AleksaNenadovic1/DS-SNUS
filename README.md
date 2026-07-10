@@ -32,3 +32,6 @@ kubectl get nodes
 kubectl get pods -n ds-snus
 
 kubectl get svc -n ds-snus 
+
+Port forwarding: ( 1 PC: 1. post forwarding + 2. kubeclt apply )
+kubectl port-forward --address 0.0.0.0 svc/ingress 30080:8080 -n ds-snus
