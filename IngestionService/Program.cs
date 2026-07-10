@@ -10,6 +10,8 @@ builder.Services.AddDbContext<ScadaDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHostedService<SensorStartupInitializer>();
+
 builder.Services.AddHostedService<SensorHealthMonitor>();
 
 builder.Services.AddControllers();

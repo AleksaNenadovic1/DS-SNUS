@@ -18,6 +18,8 @@ public class Sensor
 
     public SensorQuality Quality { get; set; }
 
+    public SensorBehavior Behavior { get; set; }
+
     public double MinTemperature { get; set; }
 
     public double MaxTemperature { get; set; }

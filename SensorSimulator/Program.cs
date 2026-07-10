@@ -1,261 +1,299 @@
-﻿using Shared;
-using Shared.Dto;
-using Shared.Enums;
-using Shared.Security;
+﻿using Shared.Dto;
+using System.Collections.Concurrent;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 
-var http = new HttpClient();
-
-var baseUrl =
-    "http://localhost:5141/api/ingest/sensor";
-
-var sensorsUrl =
-    "http://localhost:5141/api/ingest/sensors/active";
-
-var random = new Random();
-
-Console.WriteLine(
-    "Sensor simulator started..."
-);
-
-Console.WriteLine();
-Console.WriteLine("Commands:");
-Console.WriteLine("block <sensorId>");
-Console.WriteLine();
+namespace SensorSimulator;
 
 
-long messageId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-// command listener
-_ = Task.Run(async () =>
+class Program
 {
-    while (true)
+
+    private static readonly HttpClient http = new();
+
+
+
+    private const string SensorsUrl =
+        "http://localhost:5141/api/ingest/sensors/active";
+
+
+
+    private static readonly ConcurrentDictionary<int, SensorState>
+        Sensors = new();
+
+
+
+    static async Task Main()
     {
-        var command =
-            Console.ReadLine();
 
-        if (string.IsNullOrWhiteSpace(command))
-            continue;
+        Console.WriteLine(
+            "Sensor simulator started..."
+        );
 
-        var parts =
-            command.Split(' ');
 
-        if (parts.Length != 2)
-            continue;
+        Console.WriteLine();
 
-        if (!int.TryParse(parts[1], out int sensorId))
-            continue;
+        Console.WriteLine(
+            "Commands:"
+        );
 
-        switch (parts[0].ToLower())
+        Console.WriteLine(
+            "block <sensorId>"
+        );
+
+        Console.WriteLine();
+
+
+
+        using var cancellation =
+            new CancellationTokenSource();
+
+
+
+        // Start command listener
+
+        _ =
+            Task.Run(
+                () => CommandLoop(
+                    cancellation.Token
+                )
+            );
+
+
+
+        while (!cancellation.Token.IsCancellationRequested)
         {
-            case "block":
-                try
-                {
-                    var response =
-                        await http.PostAsync(
-                            $"http://localhost:5141/api/ingest/sensor/{sensorId}/block",
-                            null);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Console.WriteLine(
-                            $"Sensor {sensorId} blocked."
-                        );
-                    }
-                    else
-                    {
-                        Console.WriteLine(
-                            $"Failed blocking sensor {sensorId}: {response.StatusCode}"
-                        );
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(
-                        $"Block error: {ex.Message}"
-                    );
-                }
-                break;
-
-            default:
-                Console.WriteLine(
-                    "Unknown command."
-                );
-                break;
-        }
-    }
-});
-
-while (true)
-{
-    try
-    {
-        var sensors =
-            await http.GetFromJsonAsync<List<ActiveSensorDto>>
-            (
-                sensorsUrl
-            )
-            ??
-            new List<ActiveSensorDto>();
-
-        foreach (var sensor in sensors)
-        {
-            double value =
-                GenerateValue(sensor);
-
-            AlarmPriority alarm =
-                DetermineAlarm(
-                    value,
-                    sensor
-                );
-
-            var dto =
-                new SensorIngestDto
-                {
-                    SensorId = sensor.Id,
-
-                    Value = value,
-
-                    Timestamp =
-                        DateTime.UtcNow,
-
-                    AlarmPriority = alarm,
-
-                    Quality =
-                        sensor.Quality,
-
-                    MessageId = messageId++,
-
-                    SentAt = DateTime.UtcNow
-                };
-
-
 
             try
             {
 
-                string json =
-                    JsonSerializer.Serialize(dto);
+                await LoadSensors();
 
-                var encrypted =
-                    AesEncryption.Encrypt(json);
 
-                var secure =
-                    new SecureMessageDto
-                    {
-                        Data = encrypted.Data,
 
-                        IV = encrypted.IV,
-
-                        Signature =
-                            EcdsaSignature.Sign(json)
-                    };
-
-                var response =
-                    await http.PostAsJsonAsync(
-                        baseUrl,
-                        secure);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result =
-                        await response
-                        .Content
-                        .ReadFromJsonAsync<IngestResponseDto>();
-
-                    Console.WriteLine(
-                        $"SERVER ACCEPTED | " +
-                        $"Sensor {result!.SensorId} | " +
-                        $"Value {result.Value:F2}°C | " +
-                        $"Alarm {result.AlarmPriority} | " +
-                        $"Quality {result.Quality}"
-                    );
-                }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-
-                    Console.WriteLine(
-                        $"Server response: {response.StatusCode} - {error}"
-                    );
-                }
             }
             catch (Exception ex)
             {
+
                 Console.WriteLine(
-                    $"Sending failed: {ex.Message}"
+                    $"Sensor loading error: {ex.Message}"
                 );
+
             }
+
+
+
+            await Task.Delay(
+                TimeSpan.FromSeconds(10),
+                cancellation.Token
+            );
+
         }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(
-            $"Simulator error: {ex.Message}"
-        );
+
     }
 
-    await Task.Delay(2000);
-}
 
-static double GenerateValue(
-    ActiveSensorDto sensor)
-{
-    var random =
-        Random.Shared;
 
-    switch (sensor.Quality)
+
+
+    private static async Task LoadSensors()
     {
-        // Normal operation
-        case SensorQuality.GOOD:
 
-            return sensor.MinTemperature +
-                random.NextDouble()
-                *
-                (
-                    sensor.MaxTemperature -
-                    sensor.MinTemperature
+        var sensors =
+            await http.GetFromJsonAsync<List<ActiveSensorDto>>
+            (
+                SensorsUrl
+            )
+            ??
+            new List<ActiveSensorDto>();
+
+        var activeIds =
+            sensors
+            .Select(s => s.Id)
+            .ToHashSet();
+
+        foreach (var existing in Sensors)
+        {
+
+            if (!activeIds.Contains(existing.Key))
+            {
+
+                Console.WriteLine(
+                    $"Stopping sensor {existing.Key}"
                 );
 
-        // Sometimes produces bad values
-        case SensorQuality.UNCERTAIN:
-            if (random.NextDouble() < 0.3)
-            {
-                return random.NextDouble() * 100;
+
+                existing.Value.Running = false;
+
+
+                Sensors.TryRemove(
+                    existing.Key,
+                    out _
+                );
+
             }
 
-            return sensor.MinTemperature +
-                random.NextDouble()
-                *
-                (
-                    sensor.MaxTemperature -
-                    sensor.MinTemperature
+        }
+
+        foreach (var sensor in sensors)
+        {
+
+            if (Sensors.TryGetValue(sensor.Id, out var existing))
+            {
+                existing.Sensor.Quality = sensor.Quality;
+                existing.Sensor.MinTemperature = sensor.MinTemperature;
+                existing.Sensor.MaxTemperature = sensor.MaxTemperature;
+
+                continue;
+            }
+
+            if (!Sensors.ContainsKey(sensor.Id))
+            {
+
+                var state =
+                    new SensorState(sensor);
+
+
+
+                Sensors.TryAdd(
+                    sensor.Id,
+                    state
                 );
 
-        // Broken sensor
-        case SensorQuality.BAD:
-            return random.NextDouble() * 150;
 
-        default:
-            return 0;
+
+                Console.WriteLine(
+                    $"Starting sensor {sensor.Id}"
+                );
+
+
+
+                _ =
+                    Task.Run(
+                        () =>
+                            SensorWorker.RunAsync(
+                                state
+                            )
+                    );
+
+            }
+
+        }
+
+
     }
-}
 
-static AlarmPriority DetermineAlarm(
-    double value,
-    ActiveSensorDto sensor)
-{
-    if ((value <= sensor.MinTemperature - sensor.Alarm3Limit) || (value >= sensor.MaxTemperature + sensor.Alarm3Limit))
-        return AlarmPriority.High;
 
-    if ((value <= sensor.MinTemperature - sensor.Alarm2Limit) || (value >= sensor.MaxTemperature + sensor.Alarm2Limit))
-        return AlarmPriority.Medium;
 
-    if ((value <= sensor.MinTemperature - sensor.Alarm1Limit) || (value >= sensor.MaxTemperature + sensor.Alarm1Limit))
-        return AlarmPriority.Low;
 
-    return AlarmPriority.None;
+
+    private static async Task CommandLoop(
+        CancellationToken token)
+    {
+
+        while (!token.IsCancellationRequested)
+        {
+
+            var command =
+                Console.ReadLine();
+
+
+
+            if (string.IsNullOrWhiteSpace(command))
+                continue;
+
+
+
+            var parts =
+                command.Split(' ');
+
+
+
+            if (parts.Length != 2)
+                continue;
+
+
+
+            if (!int.TryParse(
+                parts[1],
+                out int sensorId))
+            {
+                continue;
+            }
+
+
+
+            switch (parts[0].ToLower())
+            {
+
+                case "block":
+
+                    await BlockSensor(sensorId);
+
+                    break;
+
+
+
+                default:
+
+                    Console.WriteLine(
+                        "Unknown command"
+                    );
+
+                    break;
+
+            }
+
+        }
+
+    }
+
+
+
+
+
+    private static async Task BlockSensor(
+        int sensorId)
+    {
+
+        try
+        {
+
+            var response =
+                await http.PostAsync(
+                    $"http://localhost:5141/api/ingest/sensor/{sensorId}/block",
+                    null
+                );
+
+
+
+            if (response.IsSuccessStatusCode)
+            {
+
+                Console.WriteLine(
+                    $"Sensor {sensorId} blocked."
+                );
+
+            }
+            else
+            {
+
+                Console.WriteLine(
+                    $"Blocking failed: {response.StatusCode}"
+                );
+
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            Console.WriteLine(
+                $"Block error: {ex.Message}"
+            );
+
+        }
+
+    }
 
 }

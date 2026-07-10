@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using IngestionService.Data;
+﻿using IngestionService.Data;
+using Microsoft.EntityFrameworkCore;
+using Shared.Enums;
 
 namespace IngestionService.Background;
 
@@ -75,7 +76,6 @@ public class SensorHealthMonitor : BackgroundService
                 sensor.BlockedUntil <= now)
             {
                 sensor.IsBlocked = false;
-                sensor.Quality = Shared.Enums.SensorQuality.GOOD;
 
                 Console.WriteLine(
                     $"Sensor {sensor.Id} block expired."
@@ -92,8 +92,10 @@ public class SensorHealthMonitor : BackgroundService
             {
 
                 sensor.IsActive = false;
-                sensor.Quality = Shared.Enums.SensorQuality.BAD;
-
+                sensor.Quality = 
+                    SensorQuality.BAD;
+                sensor.Behavior =
+                    SensorBehavior.Offline;
 
                 Console.WriteLine(
                     $"Sensor {sensor.Id} became inactive."
@@ -118,17 +120,19 @@ public class SensorHealthMonitor : BackgroundService
         {
             var replacements =
                 sensors
-                .Where(
-                    s =>
+                .Where(s =>
                     !s.IsActive &&
-                    !s.IsBlocked
-                )
+                    !s.IsBlocked)
+                .OrderBy(s =>
+                    s.Quality == SensorQuality.BAD)
                 .Take(5 - activeCount);
 
             foreach (var sensor in replacements)
             {
 
                 sensor.IsActive = true;
+
+                sensor.LastSeen = DateTime.UtcNow;
 
                 Console.WriteLine(
                     $"Sensor {sensor.Id} activated as replacement."

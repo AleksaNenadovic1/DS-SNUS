@@ -19,4 +19,6 @@ public class ActiveSensorDto
     public double Alarm3Limit { get; set; }
 
     public SensorQuality Quality { get; set; }
+
+    public SensorBehavior Behavior { get; set; }
 }

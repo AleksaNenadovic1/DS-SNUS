@@ -233,7 +233,9 @@ public class IngestionController : ControllerBase
 
                 Alarm3Limit = s.Alarm3Limit,
 
-                Quality = s.Quality
+                Quality = s.Quality,
+
+                Behavior = s.Behavior
             })
             .ToListAsync();
 

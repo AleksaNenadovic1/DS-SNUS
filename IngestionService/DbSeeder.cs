@@ -81,6 +81,8 @@ public static class DbSeeder
 
                 Quality = SensorQuality.UNCERTAIN,
 
+                Behavior = SensorBehavior.WrongValues,
+
                 IsActive = true
             },
 
@@ -116,6 +118,8 @@ public static class DbSeeder
                 Alarm3Limit = 20,
 
                 Quality = SensorQuality.GOOD,
+                
+                Behavior = SensorBehavior.Delayed,
 
                 IsActive = false
             },
@@ -135,6 +139,8 @@ public static class DbSeeder
 
                 Quality = SensorQuality.GOOD,
 
+                Behavior = SensorBehavior.Offline,
+
                 IsActive = false
             },
 
@@ -151,7 +157,9 @@ public static class DbSeeder
                 Alarm2Limit = 10,
                 Alarm3Limit = 20,
 
-                Quality = SensorQuality.BAD,
+                Quality = SensorQuality.GOOD,
+
+                Behavior = SensorBehavior.Dos,
 
                 IsActive = false
             },
@@ -196,7 +204,10 @@ public static class DbSeeder
 
         foreach (var sensor in sensors)
         {
-            sensor.LastSeen = DateTime.MinValue;
+            sensor.LastSeen =
+                sensor.IsActive
+                    ? DateTime.UtcNow
+                    : DateTime.MinValue;
             sensor.IsBlocked = false;
         }
 

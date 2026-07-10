@@ -17,7 +17,7 @@ namespace IngestionService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.15")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -139,6 +139,9 @@ namespace IngestionService.Migrations
 
                     b.Property<double>("Alarm3Limit")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("Behavior")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("BlockedUntil")
                         .HasColumnType("timestamp with time zone");
