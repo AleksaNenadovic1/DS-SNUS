@@ -29,3 +29,9 @@
 docker compose build --no-cache
 
 docker compose up --build
+
+kubectl get nodes
+
+kubectl get pods -n ds-snus
+
+kubectl get services -n ds-snus
